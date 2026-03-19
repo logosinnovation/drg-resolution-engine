@@ -751,6 +751,11 @@ function Verification({ data }) {
     { id: 3, title: "Substance abuse code misrouting", codes: "393 codes", detail: "F10-F19 codes (alcohol through poly-drug) routed to f894 (Left AMA) instead of f896 (Substance Abuse without Rehab). Parser picked wrong family reference. Fix: rerouted all affected codes." },
     { id: 4, title: "PE acute cor pulmonale condition split", codes: "5 codes", detail: "DRG 175 = 'PE with MCC or Acute Cor Pulmonale' — an OR condition, not a pure severity split. I260* codes always resolve to 175 regardless of secondaries. Fix: created separate single-DRG family." },
     { id: 5, title: "Expanded substance abuse scope", codes: "355 codes", detail: "Initial fix only caught F1020-F1029. Broad validation revealed F1010-F1019, F1090-F1099, and all F11-F19 prefixes were also misrouted. Fix: extended correction to all F10-F19." },
+    { id: 6, title: "B20 (HIV) missing medical family", codes: "1 code", detail: "B20 routed only to surgical HIV families (f969, f974) but not medical f977. CMS Grouper returns DRG 977. Fix: added f977 route." },
+    { id: 7, title: "Remaining f894 references in multi-route arrays", codes: "44 codes", detail: "Full sweep found 44 substance abuse codes still referencing f894 within complex multi-route arrays (neonatal + substance). Fix: replaced all remaining f894→f896." },
+    { id: 8, title: "Peptic ulcer uncomplicated codes", codes: "9 codes", detail: "K25/K26/K27 codes without hemorrhage or perforation routed to f380 (Complicated Peptic Ulcer) instead of f383 (Uncomplicated). CMS returns DRG 384. Fix: rerouted 9 codes to f383." },
+    { id: 9, title: "Neonatal prematurity P07 codes", codes: "16 codes", detail: "P07 low birth weight and preterm codes routed to f791 (Prematurity with Major Problems) instead of f792 (without Major Problems). Fix: rerouted 16 codes to f792." },
+    { id: 10, title: "R780 alcohol in blood", codes: "1 code", detail: "R780 (Finding of alcohol in blood) caught by the f894 sweep — was routed to Left AMA instead of Substance Abuse. Fixed by bug 7's sweep." },
   ];
 
   return <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -758,7 +763,7 @@ function Verification({ data }) {
     <div style={{ background: C.greenBg, border: `1px solid ${C.green}33`, borderRadius: 6, padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
       <div style={{ fontSize: 32 }}>✓</div>
       <div>
-        <div style={{ color: C.green, fontSize: 15, fontWeight: 700, fontFamily: SANS }}>Engine Validated — 408/408 Against CMS Reference Implementation</div>
+        <div style={{ color: C.green, fontSize: 15, fontWeight: 700, fontFamily: SANS }}>Engine Validated — 65,807/65,807 Against CMS Reference Implementation</div>
         <div style={{ color: C.green, fontSize: 12, marginTop: 4, opacity: 0.8 }}>
           CC/MCC data verified exact-match against IPPS FY2026 Tables 6I/6J/6K.
           Resolution logic verified against CMS Java Grouper V43 (Solventum).
@@ -823,9 +828,10 @@ function Verification({ data }) {
           <span style={{ fontSize: 10, color: C.textMuted, fontWeight: 600, minWidth: 55, textAlign: "right" }}>TOTAL</span>
           <span style={{ width: 20 }}></span>
         </div>
-        <VRow label="Targeted edge cases (exclusions, POA, Part 2, multi-route, 17 MDCs)" ours={60} expected={60} />
+        <VRow label="Targeted edge cases (exclusions, POA, Part 2, multi-route)" ours={60} expected={60} />
         <VRow label="Family coverage sweep (174 families × bare + MCC)" ours={348} expected={348} />
-        <VRow label="Combined" ours={408} expected={408} />
+        <VRow label="Full routing sweep (every routable code as principal)" ours={65807} expected={65807} />
+        <VRow label="Total unique codes validated" ours={65807} expected={65807} />
       </div>
       <div style={{ marginTop: 12, color: C.textMuted, fontSize: 12, lineHeight: 1.6 }}>
         <strong style={{ color: C.textBright }}>What the targeted cases tested:</strong> CC/MCC evaluation across 9 DRG families, PDX exclusion pairs (mutual exclusion, same-family, cross-family), POA=Y vs POA=N (confirmed POA does not gate CC/MCC for DRG assignment), no-exclusion codes, Part 2 alive-only codes, Pre-MDC routing, 2-tier CC resolution, condition-based family splits, surgical/medical dual routing, and at least one principal per major MDC.
@@ -835,7 +841,7 @@ function Verification({ data }) {
     {/* Bugs Found */}
     <Section label="Bugs Found During Validation">
       <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 12, lineHeight: 1.5 }}>
-        The initial engine matched 52/60 targeted cases (86.7%). Five distinct bugs were identified, diagnosed, fixed, and re-validated. The broad sweep then exposed two additional bugs. All were fixed before final 408/408 results.
+        Initial validation: 408 targeted test cases found 7 bugs. Full sweep of all 65,807 routable codes found 3 more. All 10 bugs fixed — final result: 65,807/65,807 (100%).
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {bugs.map(b => <div key={b.id} style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 4, padding: 12 }}>
@@ -952,7 +958,7 @@ export default function App() {
     <style>{css}</style>
     <div style={{ borderBottom: `1px solid ${C.border}`, padding: "14px 20px" }}>
       <h1 style={{ fontFamily: SANS, fontSize: 18, fontWeight: 700, color: C.textBright, letterSpacing: -0.5 }}>DRG Resolution Engine</h1>
-      <div style={{ color: C.textDim, fontSize: 11, fontFamily: MONO }}>CDI Validation · CMS V43 · 408/408 Grouper Validated</div>
+      <div style={{ color: C.textDim, fontSize: 11, fontFamily: MONO }}>CDI Validation · CMS V43 · 65,807/65,807 Grouper Validated</div>
     </div>
     <Loader onLoad={setData} />
   </div>;
@@ -969,7 +975,7 @@ export default function App() {
     <div style={{ borderBottom: `1px solid ${C.border}`, padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
       <div>
         <h1 style={{ fontFamily: SANS, fontSize: 18, fontWeight: 700, color: C.textBright, letterSpacing: -0.5, marginBottom: 1 }}>DRG Resolution Engine</h1>
-        <div style={{ color: C.textDim, fontSize: 10, fontFamily: MONO }}>V{data.version} · {Object.keys(data.drgs).length} DRGs · {Object.keys(data.cc).length} CC/MCC · 408/408 CMS Grouper V43</div>
+        <div style={{ color: C.textDim, fontSize: 10, fontFamily: MONO }}>V{data.version} · {Object.keys(data.drgs).length} DRGs · {Object.keys(data.cc).length} CC/MCC · 65,807/65,807 CMS Grouper V43</div>
       </div>
       <button onClick={() => setData(null)} style={{ background: "none", border: `1px solid ${C.border}`, color: C.textDim, padding: "4px 10px", borderRadius: 3, cursor: "pointer", fontSize: 12 }}>⟲</button>
     </div>
