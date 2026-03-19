@@ -2406,7 +2406,16 @@ function Validate({ data }) {
     </Section>
     </div>
 
-    {result && <div style={{ display: "flex", gap: 10, alignItems: "stretch" }}>
+    {result?.before?.error && <div style={{ background: C.redBg, border: `1px solid ${C.red}33`, borderRadius: 6,
+      padding: "14px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+      <span style={{ fontSize: 18, color: C.red }}>✕</span>
+      <div>
+        <div style={{ color: C.red, fontSize: 13, fontWeight: 600 }}>{result.before.error}</div>
+        <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>Check the principal diagnosis code and try again.</div>
+      </div>
+    </div>}
+
+    {result && !result.before?.error && <div style={{ display: "flex", gap: 10, alignItems: "stretch" }}>
       <DRGCard label="BEFORE" result={result.before} data={data} dim={!!result.after?.primary} />
       {result.after?.primary && <>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, minWidth: 60 }}>
@@ -2422,7 +2431,7 @@ function Validate({ data }) {
       </>}
     </div>}
 
-    {result?.after && result.aiCode && <Section label={`Evaluation — ${result.aiCode}`}>
+    {result?.after?.evals && result.aiCode && <Section label={`Evaluation — ${result.aiCode}`}>
       {(() => {
         const aiEval = result.after.evals.find(e => e.code === result.aiCode);
         if (!aiEval) return <div style={{ color: C.textDim, fontSize: 13 }}>Code not found</div>;
