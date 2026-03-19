@@ -2026,12 +2026,138 @@
         "J45"
       ],
       "notes": "J43 emphysema, J44 COPD, J45 asthma",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "copd_spirometry",
+          "category": "clinical_finding",
+          "data_type": "Spirometry",
+          "criterion": "FEV1/FVC ratio < 0.70 (COPD) or FEV1 reversibility \u2265 12% and 200 mL (Asthma)",
+          "detail": "Spirometry confirms underlying obstructive disease. During acute exacerbation, spirometry may not be feasible \u2014 clinical history of prior confirmed diagnosis suffices.",
+          "source": "GOLD",
+          "source_detail": "GOLD 2024 Report: Spirometric confirmation of COPD",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "copd_acute_worsening",
+          "category": "clinical_finding",
+          "data_type": "Clinical Presentation",
+          "criterion": "Acute worsening of respiratory symptoms beyond normal day-to-day variation requiring change in therapy",
+          "detail": "Increased dyspnea, sputum volume, sputum purulence (Anthonisen criteria for COPD). For asthma: increased wheeze, chest tightness, rescue inhaler use, nocturnal awakening.",
+          "source": "GOLD",
+          "source_detail": "GOLD 2024: Definition of COPD exacerbation; GINA 2023: Asthma exacerbation",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "copd_escalation",
+          "category": "intervention",
+          "data_type": "Treatment Escalation",
+          "criterion": "Escalation from baseline therapy: systemic corticosteroids, nebulized bronchodilators, antibiotics (COPD), or IV magnesium (asthma)",
+          "detail": "Transition from maintenance inhalers to systemic steroids and/or nebulized treatments indicates acute exacerbation severity.",
+          "source": "GOLD",
+          "source_detail": "GOLD 2024: Pharmacologic management of exacerbations",
+          "required": false,
+          "evidence_weight": "moderate"
+        },
+        {
+          "id": "copd_abg_resp",
+          "category": "laboratory",
+          "data_type": "ABG",
+          "criterion": "ABG showing acute respiratory acidosis (pH < 7.35 with elevated PaCO2) or hypoxemia",
+          "detail": "ABG abnormalities during exacerbation may also support respiratory failure diagnosis (J96.x) in addition to the COPD/asthma code.",
+          "source": "GOLD",
+          "source_detail": "GOLD 2024: Assessment of exacerbation severity",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "copd_doc_exacerbation",
+          "requirement": "Provider must document 'acute exacerbation' of COPD or asthma. The terms 'COPD' or 'asthma' alone without exacerbation map to codes that are NOT CC/MCC.",
+          "insufficient_terms": [
+            "COPD",
+            "asthma",
+            "shortness of breath",
+            "wheezing",
+            "bronchospasm",
+            "dyspnea"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q1 2017 p.25: COPD exacerbation documentation; Q3 2019 p.15"
+        },
+        {
+          "id": "copd_doc_severity",
+          "requirement": "For asthma, document the SEVERITY (mild intermittent, mild/moderate/severe persistent) AND the exacerbation status. Status asthmaticus (J45.x2) indicates a severe, prolonged attack not responsive to standard therapy.",
+          "insufficient_terms": [
+            "asthma attack",
+            "asthma flare"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.10.a: Asthma severity and exacerbation coding"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "J441",
+          "description": "COPD with acute exacerbation",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Documented COPD baseline with acute worsening (increased dyspnea, sputum, purulence)",
+          "specificity_note": "CC tier. If also meeting respiratory failure criteria, add J96.x (MCC) as separate code."
+        },
+        {
+          "code": "J440",
+          "description": "COPD with acute lower respiratory infection",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "COPD exacerbation triggered by infection \u2014 document the specific organism if known",
+          "upgrade_from": "J441",
+          "upgrade_evidence": "If infectious trigger identified, J44.0 is more specific than J44.1"
+        },
+        {
+          "code": "J4552",
+          "description": "Severe persistent asthma with status asthmaticus",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Severe asthma not responsive to standard bronchodilator therapy \u2014 prolonged attack requiring ICU-level care",
+          "upgrade_from": "J4551",
+          "upgrade_evidence": "Document 'status asthmaticus' if refractory to initial therapy"
+        },
+        {
+          "code": "J4551",
+          "description": "Severe persistent asthma with acute exacerbation",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Severe persistent asthma (FEV1 < 60% predicted baseline) with acute worsening"
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Patient admitted with COPD and increased dyspnea/sputum but documentation says only 'COPD'",
+          "query": "The patient has COPD and presented with [increased dyspnea/sputum purulence/increased rescue inhaler use]. You documented 'COPD.' Does this represent an acute exacerbation of COPD? The distinction affects severity classification.",
+          "source": "CODING_CLINIC Q1 2017 p.25"
+        },
+        {
+          "trigger": "Asthma patient on continuous nebulizers and IV steroids but 'status asthmaticus' not documented",
+          "query": "The patient with [severity] persistent asthma required continuous nebulized bronchodilators and IV corticosteroids on [DATE]. Does this represent status asthmaticus?",
+          "source": "ICD10_GUIDELINES I.C.10.a"
+        },
+        {
+          "trigger": "COPD exacerbation with respiratory failure but only COPD documented",
+          "query": "The patient with COPD exacerbation has [ABG values/SpO2/ventilatory support]. In addition to the COPD exacerbation, does this represent acute respiratory failure? Both diagnoses can be coded.",
+          "source": "GOLD 2024 + CODING_CLINIC Q4 2017 p.23"
+        }
+      ],
+      "common_pitfalls": [
+        "COPD without exacerbation (J44.9) is NOT CC/MCC. Only J44.0 and J44.1 (with infection or exacerbation) are CC.",
+        "Asthma without exacerbation or status asthmaticus is NOT CC/MCC. Only the x1 (exacerbation) and x2 (status asthmaticus) codes are CC.",
+        "COPD exacerbation with respiratory failure: code BOTH J44.1 AND J96.x. The respiratory failure code (MCC) adds the DRG impact.",
+        "J43 (emphysema) codes are NOT CC/MCC and should not be used for acute presentations. Use J44.x for acute COPD exacerbation.",
+        "Status asthmaticus and acute exacerbation are mutually exclusive per ICD-10 structure \u2014 assign only one per asthma code."
+      ],
+      "context_modifiers": {
+        "with_resp_failure": "COPD/asthma exacerbation with respiratory failure: code both. J96.x is MCC and drives DRG impact more than J44/J45 (CC).",
+        "with_pneumonia": "COPD exacerbation triggered by pneumonia: use J44.0 (with LRI) + specific pneumonia code (J13-J18). Both affect DRG.",
+        "post_surgical": "Postoperative bronchospasm in known asthmatic: query whether this represents an acute asthma exacerbation vs expected complication."
+      }
     },
     {
       "id": "pe",
@@ -2059,12 +2185,129 @@
         "I26"
       ],
       "notes": "I26.x: With/without acute cor pulmonale",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "pe_ctpa",
+          "category": "imaging",
+          "data_type": "CT Pulmonary Angiography",
+          "criterion": "CTPA showing filling defect in pulmonary arteries",
+          "detail": "Gold standard for PE diagnosis. Identifies location (main, lobar, segmental, subsegmental) and type (saddle, single subsegmental, multiple).",
+          "source": "ESC_PE",
+          "source_detail": "2019 ESC Guidelines: Diagnostic strategy for PE",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "pe_echo_rv",
+          "category": "imaging",
+          "data_type": "Echocardiogram",
+          "criterion": "RV dilation or dysfunction on echocardiography",
+          "detail": "RV/LV ratio > 1.0, RV free wall hypokinesis (McConnell's sign), elevated RVSP. Indicates hemodynamic significance \u2014 distinguishes acute cor pulmonale (I26.0x) from PE without (I26.9x).",
+          "source": "ESC_PE",
+          "source_detail": "2019 ESC: RV dysfunction assessment",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "pe_troponin_bnp",
+          "category": "laboratory",
+          "data_type": "Troponin / BNP",
+          "criterion": "Elevated troponin or BNP/NT-proBNP indicating RV strain",
+          "detail": "Biomarker elevation in PE indicates myocardial injury from RV pressure overload. Supports risk stratification (intermediate-high risk PE).",
+          "source": "ESC_PE",
+          "source_detail": "2019 ESC: Risk stratification with biomarkers",
+          "required": false,
+          "evidence_weight": "moderate"
+        },
+        {
+          "id": "pe_dvt",
+          "category": "imaging",
+          "data_type": "Lower Extremity Duplex",
+          "criterion": "DVT on compression ultrasonography supporting VTE diagnosis",
+          "detail": "DVT source supports PE diagnosis in clinical context. Code DVT separately (I82.x).",
+          "source": "ESC_PE",
+          "source_detail": "2019 ESC: CUS for DVT evaluation in suspected PE",
+          "required": false,
+          "evidence_weight": "moderate"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "pe_doc_cor_pulmonale",
+          "requirement": "Provider must document whether PE is WITH or WITHOUT acute cor pulmonale. I26.0x (with) vs I26.9x (without) \u2014 both are MCC, but the distinction drives accurate coding.",
+          "insufficient_terms": [
+            "PE",
+            "pulmonary embolism NOS",
+            "clot in lung"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q1 2020 p.19: PE with/without acute cor pulmonale distinction"
+        },
+        {
+          "id": "pe_doc_type",
+          "requirement": "Document the PE TYPE when known: saddle (I26.02/I26.92), septic (I26.01/I26.90), subsegmental single (I26.93) vs multiple (I26.94), cement/fat embolism.",
+          "insufficient_terms": [
+            "PE"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "FY2023+ expanded PE codes: specify type and cor pulmonale status"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "I2602",
+          "description": "Saddle embolus with acute cor pulmonale",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "CTPA showing saddle embolus at bifurcation + echo showing RV dilation/dysfunction",
+          "upgrade_from": "I2699",
+          "upgrade_evidence": "Specify saddle location and cor pulmonale from imaging"
+        },
+        {
+          "code": "I2609",
+          "description": "Other PE with acute cor pulmonale",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "PE on CTPA + echocardiographic evidence of RV strain/dysfunction",
+          "upgrade_from": "I2699",
+          "upgrade_evidence": "Document 'with acute cor pulmonale' when echo shows RV dysfunction"
+        },
+        {
+          "code": "I2693",
+          "description": "Single subsegmental PE without acute cor pulmonale",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Isolated subsegmental filling defect on CTPA without RV strain",
+          "specificity_note": "MCC \u2014 FY2023 new code. Clinically important for anticoagulation decision."
+        },
+        {
+          "code": "I2699",
+          "description": "Other PE without acute cor pulmonale",
+          "cc_mcc": "MCC",
+          "specificity_note": "MCC but least specific. Query for location, type, and cor pulmonale status."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "CTPA positive for PE but documentation does not address cor pulmonale",
+          "query": "CTPA on [DATE] confirms pulmonary embolism. Echocardiogram shows [RV findings]. Does this PE present with or without acute cor pulmonale (RV dysfunction)?",
+          "source": "CODING_CLINIC Q1 2020 p.19"
+        },
+        {
+          "trigger": "PE documented generically without type specification",
+          "query": "You documented 'pulmonary embolism.' CTPA shows [LOCATION \u2014 saddle/lobar/segmental/subsegmental]. For coding accuracy, could you specify the location? Is it a saddle embolus, single subsegmental, or multiple?",
+          "source": "ICD10_GUIDELINES \u2014 FY2023 PE code expansion"
+        }
+      ],
+      "common_pitfalls": [
+        "All PE codes (I26.x) are MCC \u2014 the coding distinction is about specificity and accuracy, not CC/MCC tier change.",
+        "Acute cor pulmonale (I26.0x) vs without (I26.9x): determined by RV dysfunction on echo, NOT by hemodynamic instability alone.",
+        "Chronic PE (I27.82) is a separate diagnosis from acute PE (I26.x). Chronic thromboembolic disease has different management and coding.",
+        "Subsegmental PE codes (I26.93/I26.94) are new FY2023 \u2014 important because clinical significance and anticoagulation decisions differ.",
+        "DVT should be coded separately from PE \u2014 the PE code does not capture the DVT source."
+      ],
+      "context_modifiers": {
+        "with_dvt": "PE with DVT: code both I26.x (PE) and I82.x (DVT). The VTE event involves both but they are separate code assignments.",
+        "with_resp_failure": "Massive PE causing respiratory failure: code both I26.x and J96.x. Respiratory failure may be the driving MCC depending on DRG family.",
+        "with_cardiac_arrest": "PE causing cardiac arrest: I26.x as principal if PE is the underlying cause. I46.x as additional code."
+      }
     },
     {
       "id": "afib",
@@ -2087,12 +2330,119 @@
         "I48"
       ],
       "notes": "I48.x: Paroxysmal, persistent, chronic, typical/atypical flutter",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "afib_ecg",
+          "category": "clinical_finding",
+          "data_type": "ECG / Telemetry",
+          "criterion": "ECG or telemetry showing irregularly irregular rhythm without distinct P waves (AFib) or sawtooth flutter waves (AFlutter)",
+          "detail": "12-lead ECG is diagnostic. Holter/event monitor for paroxysmal episodes. Telemetry strips document in-hospital episodes.",
+          "source": "ACC_AHA_AFIB",
+          "source_detail": "2014 AHA/ACC/HRS AFib Guidelines: ECG diagnosis",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "afib_rate",
+          "category": "vitals",
+          "data_type": "Heart Rate",
+          "criterion": "Ventricular rate documented \u2014 rapid (> 100), controlled (60-100), or slow (< 60)",
+          "detail": "Rate control assessment. Rapid ventricular response (RVR) may require urgent rate control. Document the rate at presentation and after treatment.",
+          "source": "ACC_AHA_AFIB",
+          "source_detail": "2014 AHA/ACC/HRS: Rate control strategy",
+          "required": false,
+          "evidence_weight": "moderate"
+        },
+        {
+          "id": "afib_duration",
+          "category": "clinical_finding",
+          "data_type": "Duration / Type",
+          "criterion": "Classification: paroxysmal (self-terminating, < 7 days), persistent (> 7 days), long-standing persistent (> 12 months), permanent (accepted by physician and patient)",
+          "detail": "Duration determines the ICD-10 code and management strategy. Paroxysmal AFib (I48.0/I48.1x) vs permanent (I48.21).",
+          "source": "ACC_AHA_AFIB",
+          "source_detail": "2014 AHA/ACC/HRS: AFib classification",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "afib_doc_type",
+          "requirement": "Provider must document the TYPE of atrial fibrillation/flutter. Paroxysmal AFib (I48.0/I48.1x) is NOT CC. Only persistent (I48.11, I48.19), chronic (I48.20, I48.21), and flutter (I48.3, I48.4, I48.92) are CC.",
+          "insufficient_terms": [
+            "AFib",
+            "atrial fibrillation",
+            "irregular heart rhythm",
+            "a-fib"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q3 2019 p.9: AFib type documentation; Q1 2014 p.28"
+        },
+        {
+          "id": "afib_doc_flutter",
+          "requirement": "Distinguish atrial FIBRILLATION from atrial FLUTTER \u2014 they are different conditions with different codes. Document 'typical' (I48.3) vs 'atypical' (I48.4) flutter when applicable.",
+          "insufficient_terms": [
+            "a-fib/flutter",
+            "afib/aflutter"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.9: Atrial fibrillation vs flutter are distinct diagnoses"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "I4811",
+          "description": "Longstanding persistent atrial fibrillation",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "AFib continuous for > 12 months, decision to pursue rhythm control",
+          "specificity_note": "CC \u2014 most specific persistent AFib code"
+        },
+        {
+          "code": "I4821",
+          "description": "Permanent atrial fibrillation",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "AFib accepted as permanent by physician and patient \u2014 no further rhythm control attempted",
+          "upgrade_from": "I4820",
+          "upgrade_evidence": "Specify 'permanent' vs 'chronic unspecified' based on management intent"
+        },
+        {
+          "code": "I483",
+          "description": "Typical atrial flutter",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Counterclockwise flutter using cavotricuspid isthmus \u2014 sawtooth waves in inferior leads",
+          "specificity_note": "Distinct from AFib \u2014 different mechanism, different ablation approach"
+        },
+        {
+          "code": "I4892",
+          "description": "Unspecified atrial flutter",
+          "cc_mcc": "CC",
+          "specificity_note": "CC \u2014 query for typical vs atypical when EP study or ablation data available"
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Atrial fibrillation documented without type (paroxysmal/persistent/permanent)",
+          "query": "You documented 'atrial fibrillation.' For coding accuracy, is this paroxysmal (self-terminating), persistent (sustained > 7 days), longstanding persistent (> 12 months), or permanent? The classification affects severity coding.",
+          "source": "CODING_CLINIC Q3 2019 p.9"
+        },
+        {
+          "trigger": "'A-fib/flutter' documented as combined \u2014 ambiguous",
+          "query": "Your documentation mentions 'afib/flutter.' For accurate coding, does the patient have atrial fibrillation, atrial flutter, or both? These are distinct conditions coded separately.",
+          "source": "ICD10_GUIDELINES I.C.9"
+        }
+      ],
+      "common_pitfalls": [
+        "Paroxysmal AFib (I48.0, I48.1x excluding I48.11/I48.19) is NOT CC/MCC. Only persistent, chronic/permanent, and flutter are CC.",
+        "I48.0 (paroxysmal AFib) is NOT a CC despite being commonly documented in inpatients. This catches many CDI teams off guard.",
+        "'New-onset AFib' \u2014 document whether it becomes persistent or resolves (paroxysmal). If AFib persists through hospitalization, 'persistent' may be appropriate.",
+        "AFib with RVR is still coded with the same AFib type code \u2014 there is no separate 'AFib with RVR' ICD-10 code. The rate is a clinical finding, not a separate diagnosis.",
+        "Atrial flutter and AFib can coexist \u2014 code both if documented."
+      ],
+      "context_modifiers": {
+        "with_heart_failure": "AFib commonly coexists with HF. Both should be coded separately. AFib may be the trigger for HF exacerbation \u2014 document this relationship if applicable.",
+        "with_stroke": "AFib as source of cardioembolic stroke: code both. The stroke (I63.4x embolism) and AFib drive separate DRG impacts.",
+        "with_anticoagulation": "Anticoagulation management adds clinical complexity but does not change the AFib code. Document bleeding complications separately if present."
+      }
     },
     {
       "id": "gi_hemorrhage",
@@ -2164,12 +2514,154 @@
         "K2991"
       ],
       "notes": "K92.0\u2013K92.2 + K25\u2013K29 with hemorrhage",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "gi_visible_bleed",
+          "category": "clinical_finding",
+          "data_type": "Clinical Presentation",
+          "criterion": "Hematemesis, melena, hematochezia, or coffee-ground emesis",
+          "detail": "Hematemesis (K92.0) and melena (K92.1) are themselves CC codes but are less specific than source-identified hemorrhage. Hematochezia suggests lower GI source.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q2 2013 p.15: GI hemorrhage coding hierarchy",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "gi_hgb_drop",
+          "category": "laboratory",
+          "data_type": "Hemoglobin",
+          "criterion": "Hemoglobin drop \u2265 2 g/dL from baseline, or Hgb < 7 g/dL requiring transfusion",
+          "detail": "Significant Hgb drop supports acute blood loss. Transfusion requirement indicates clinical significance.",
+          "threshold": {
+            "metric": "Hemoglobin drop",
+            "operator": ">=",
+            "value": 2,
+            "unit": "g/dL"
+          },
+          "source": "CODING_CLINIC",
+          "source_detail": "Q1 2016 p.14: GI hemorrhage with anemia",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "gi_endoscopy",
+          "category": "imaging",
+          "data_type": "Endoscopy (EGD/Colonoscopy)",
+          "criterion": "Endoscopic identification of bleeding source: ulcer with visible vessel, actively bleeding lesion, stigmata of recent hemorrhage",
+          "detail": "Endoscopy both diagnoses and treats. Findings determine the specific code: gastric ulcer (K25), duodenal (K26), peptic NOS (K27), gastritis (K29), or unspecified (K92.2).",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q3 2017 p.19: Endoscopic findings and code selection",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "gi_transfusion",
+          "category": "intervention",
+          "data_type": "Blood Transfusion",
+          "criterion": "Packed red blood cell transfusion for acute blood loss",
+          "detail": "Transfusion supports diagnosis of acute blood loss anemia (D62, CC) in addition to the GI hemorrhage code.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2016 p.47: Transfusion and acute blood loss anemia coding",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "gi_doc_source",
+          "requirement": "Document the BLEEDING SOURCE when identified: gastric ulcer, duodenal ulcer, gastritis, esophageal varices, diverticula, angiodysplasia, etc. Source-specific codes (K25\u2013K28 with hemorrhage) are MCC; K92.0/K92.1/K92.2 (symptoms) are only CC.",
+          "insufficient_terms": [
+            "GI bleed",
+            "GI hemorrhage NOS",
+            "blood in stool",
+            "upper GI bleed"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q2 2013 p.15: Code to the source when identified"
+        },
+        {
+          "id": "gi_doc_acuity",
+          "requirement": "For ulcers, specify ACUTE vs CHRONIC. Acute gastric ulcer with hemorrhage (K25.0) vs chronic (K25.4) \u2014 both MCC, but clinical accuracy matters.",
+          "insufficient_terms": [
+            "ulcer with bleeding"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.11: Ulcer coding by acuity and complication"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "K250",
+          "description": "Acute gastric ulcer with hemorrhage",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "EGD showing actively bleeding or recently bleeding acute gastric ulcer",
+          "upgrade_from": "K922",
+          "upgrade_evidence": "Identify gastric ulcer as source on endoscopy \u2014 changes CC to MCC"
+        },
+        {
+          "code": "K260",
+          "description": "Acute duodenal ulcer with hemorrhage",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "EGD showing actively bleeding duodenal ulcer",
+          "upgrade_from": "K922",
+          "upgrade_evidence": "Identify duodenal ulcer source \u2014 CC to MCC"
+        },
+        {
+          "code": "K2901",
+          "description": "Acute gastritis with bleeding",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "EGD showing gastritis as bleeding source \u2014 erosive, hemorrhagic, or stress-related",
+          "upgrade_from": "K922",
+          "upgrade_evidence": "Specify gastritis with bleeding from endoscopy"
+        },
+        {
+          "code": "K920",
+          "description": "Hematemesis",
+          "cc_mcc": "CC",
+          "specificity_note": "CC only \u2014 symptom code. If source is identified on endoscopy, use the source-specific code (MCC) instead."
+        },
+        {
+          "code": "K921",
+          "description": "Melena",
+          "cc_mcc": "CC",
+          "specificity_note": "CC only \u2014 symptom code. Replace with source-specific code when endoscopy identifies the source."
+        },
+        {
+          "code": "K922",
+          "description": "GI hemorrhage, unspecified",
+          "cc_mcc": "CC",
+          "specificity_note": "CC only. The single biggest upgrade opportunity in this family: ANY source identification on endoscopy converts CC \u2192 MCC."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Patient with GI bleeding had EGD showing ulcer but documentation says only 'GI bleed'",
+          "query": "EGD on [DATE] revealed [FINDING \u2014 e.g., gastric ulcer with visible vessel]. You documented 'GI bleed.' Could you update the diagnosis to reflect the endoscopic source? For example, 'acute gastric ulcer with hemorrhage.'",
+          "source": "CODING_CLINIC Q2 2013 p.15"
+        },
+        {
+          "trigger": "GI hemorrhage with Hgb drop and transfusion but no acute blood loss anemia documented",
+          "query": "The patient's hemoglobin dropped from [BASELINE] to [NADIR] g/dL requiring [#] units pRBC transfusion. In addition to the GI hemorrhage, does this represent acute blood loss anemia?",
+          "source": "CODING_CLINIC Q4 2016 p.47"
+        },
+        {
+          "trigger": "Melena or hematemesis documented but source not yet identified",
+          "query": "The patient presented with [hematemesis/melena]. Has a source been identified? If endoscopy or other evaluation has identified a bleeding source (ulcer, gastritis, varices, etc.), please update the diagnosis accordingly.",
+          "source": "CODING_CLINIC Q2 2013 p.15"
+        }
+      ],
+      "common_pitfalls": [
+        "K92.0 (hematemesis), K92.1 (melena), K92.2 (GI hemorrhage unspecified) are all CC only. Source-specific codes with hemorrhage (K25\u2013K29 with hemorrhage) are MCC. The endoscopy result is the key to the upgrade.",
+        "Acute blood loss anemia (D62) should be coded in addition to GI hemorrhage when Hgb drops significantly. D62 is CC and adds separate DRG impact.",
+        "If both hemorrhage and perforation are present, use the combination code (K25.2, K25.6, etc.) \u2014 do not code them separately.",
+        "Do not confuse GI hemorrhage with occult blood in stool (R19.5) \u2014 occult blood is a finding, not a hemorrhage diagnosis.",
+        "Esophageal varices with bleeding (I85.01, I85.11) are coded under the circulatory chapter, not the digestive chapter."
+      ],
+      "context_modifiers": {
+        "with_anticoagulation": "GI hemorrhage on anticoagulants: document the drug and whether this represents an adverse effect (T45.x) or appropriate therapeutic use. The anticoagulant complication adds coding complexity.",
+        "with_liver_disease": "GI hemorrhage in cirrhosis: variceal bleeding uses I85.x codes, not K92.x. Portal hypertensive gastropathy is a separate entity.",
+        "with_blood_loss_anemia": "Always query for acute blood loss anemia (D62) when Hgb drops \u2265 2 g/dL or transfusion is given. D62 adds CC impact on top of the GI hemorrhage code."
+      }
     },
     {
       "id": "pancreatitis",
@@ -2203,12 +2695,136 @@
         "K85"
       ],
       "notes": "K85.x: By etiology (biliary, alcohol, drug, idiopathic)",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "panc_lipase",
+          "category": "laboratory",
+          "data_type": "Lipase / Amylase",
+          "criterion": "Serum lipase or amylase \u2265 3x upper limit of normal",
+          "detail": "Lipase is preferred (more specific). Meets one of three Atlanta Criteria for acute pancreatitis diagnosis.",
+          "threshold": {
+            "metric": "Lipase",
+            "operator": ">=",
+            "value": 3,
+            "unit": "x ULN"
+          },
+          "source": "AGA_PANCREATITIS",
+          "source_detail": "Revised Atlanta Classification 2012: Diagnostic criterion 2",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "panc_pain",
+          "category": "clinical_finding",
+          "data_type": "Abdominal Pain",
+          "criterion": "Acute onset epigastric/LUQ abdominal pain, often radiating to back, severe and persistent",
+          "detail": "Characteristic pain pattern meets Atlanta Criterion 1. Sudden onset, severe, constant \u2014 distinguished from intermittent biliary colic.",
+          "source": "AGA_PANCREATITIS",
+          "source_detail": "Revised Atlanta Classification: Diagnostic criterion 1",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "panc_imaging",
+          "category": "imaging",
+          "data_type": "CT Abdomen / MRCP",
+          "criterion": "Contrast-enhanced CT showing pancreatic inflammation, edema, necrosis, or peripancreatic fluid",
+          "detail": "CT with IV contrast identifies necrosis extent and complications. Should be delayed 48-72h from onset for optimal necrosis detection. MRCP for biliary etiology.",
+          "source": "AGA_PANCREATITIS",
+          "source_detail": "Revised Atlanta Classification: Diagnostic criterion 3; AGA 2018 Technical Review",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "panc_necrosis",
+          "category": "imaging",
+          "data_type": "CT Necrosis Assessment",
+          "criterion": "Pancreatic necrosis: lack of enhancement on CT \u2265 30% of gland, or peripancreatic necrosis",
+          "detail": "Necrosis status drives 7th character: x0 (without necrosis), x1 (uninfected necrosis), x2 (infected necrosis). Infected necrosis is the highest severity.",
+          "source": "AGA_PANCREATITIS",
+          "source_detail": "Revised Atlanta: Necrotizing vs interstitial pancreatitis",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "panc_doc_etiology",
+          "requirement": "Document the ETIOLOGY: biliary/gallstone (K85.1x), alcohol-induced (K85.2x), drug-induced (K85.3x), idiopathic (K85.0x), or other (K85.8x). 'Acute pancreatitis' alone maps to K85.9x (unspecified).",
+          "insufficient_terms": [
+            "pancreatitis",
+            "acute pancreatitis NOS",
+            "elevated lipase"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q3 2019 p.18: Pancreatitis etiology documentation"
+        },
+        {
+          "id": "panc_doc_necrosis",
+          "requirement": "Document NECROSIS STATUS: without necrosis (x0), with uninfected necrosis (x1), or with infected necrosis (x2). FY2023 expanded codes require this 7th character.",
+          "insufficient_terms": [
+            "necrotizing pancreatitis"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "FY2023 pancreatitis code expansion: 7th character for necrosis status"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "K8512",
+          "description": "Biliary acute pancreatitis with infected necrosis",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Gallstone etiology + CT showing necrosis + positive fine needle aspirate culture",
+          "upgrade_from": "K8590",
+          "upgrade_evidence": "Specify biliary etiology AND infected necrosis for maximum specificity"
+        },
+        {
+          "code": "K8511",
+          "description": "Biliary acute pancreatitis with uninfected necrosis",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Gallstone etiology + CT necrosis without infection",
+          "upgrade_from": "K8510",
+          "upgrade_evidence": "Document necrosis on CT to add 7th character"
+        },
+        {
+          "code": "K8510",
+          "description": "Biliary acute pancreatitis without necrosis",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Gallstone/biliary etiology confirmed by imaging (CBD stone, dilated duct, sludge)",
+          "upgrade_from": "K8590",
+          "upgrade_evidence": "Specify biliary etiology from MRCP/ultrasound findings"
+        },
+        {
+          "code": "K8590",
+          "description": "Acute pancreatitis, unspecified, without necrosis",
+          "cc_mcc": "MCC",
+          "specificity_note": "MCC \u2014 all acute pancreatitis codes are MCC. Specificity improves accuracy, not DRG tier."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Acute pancreatitis documented without etiology specification",
+          "query": "You documented 'acute pancreatitis.' Workup shows [FINDINGS \u2014 gallstones on ultrasound / alcohol history / recent drug exposure]. Could you specify the etiology? Biliary, alcohol-induced, drug-induced, or idiopathic?",
+          "source": "CODING_CLINIC Q3 2019 p.18"
+        },
+        {
+          "trigger": "CT shows necrosis but documentation does not specify necrosis status",
+          "query": "CT abdomen on [DATE] shows [pancreatic necrosis / peripancreatic fluid collections]. Could you update the diagnosis to specify necrosis status (uninfected vs infected)?",
+          "source": "ICD10_GUIDELINES \u2014 FY2023 pancreatitis codes"
+        }
+      ],
+      "common_pitfalls": [
+        "ALL acute pancreatitis codes (K85.x) are MCC \u2014 the documentation focus is on accuracy and specificity, not CC/MCC tier change.",
+        "Chronic pancreatitis (K86.x) is NOT CC/MCC. The acute vs chronic distinction matters \u2014 acute exacerbation of chronic pancreatitis is coded as acute (K85.x).",
+        "The 7th character for necrosis (x0/x1/x2) is new FY2023. Many providers are not yet documenting necrosis status routinely.",
+        "Drug-induced pancreatitis (K85.3x): document the specific causative drug and whether it's an adverse effect (T36-T50).",
+        "Elevated lipase alone is NOT pancreatitis \u2014 need at least 2 of 3 Atlanta criteria (pain, lipase \u2265 3x ULN, imaging findings)."
+      ],
+      "context_modifiers": {
+        "with_organ_failure": "Severe pancreatitis with organ failure (renal, respiratory, cardiovascular): code each organ failure separately. These drive additional MCC impact.",
+        "with_sepsis": "Infected pancreatic necrosis may lead to sepsis: code the sepsis (A41.x) and the pancreatitis (K85.x2). The sepsis may drive a different DRG family.",
+        "post_ercp": "Post-ERCP pancreatitis: code K85.8x (other) with procedure complication code. Document the link to the ERCP."
+      }
     },
     {
       "id": "hepatic_failure",
@@ -2232,12 +2848,140 @@
         "K72"
       ],
       "notes": "K70 alcoholic liver, K71 toxic liver, K72 hepatic failure",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "hep_coag",
+          "category": "laboratory",
+          "data_type": "INR / PT",
+          "criterion": "INR \u2265 1.5 indicating coagulopathy from impaired hepatic synthetic function",
+          "detail": "Coagulopathy is a hallmark of hepatic failure. INR elevation reflects inability to synthesize clotting factors.",
+          "threshold": {
+            "metric": "INR",
+            "operator": ">=",
+            "value": 1.5,
+            "unit": "ratio"
+          },
+          "source": "AASLD_LIVER",
+          "source_detail": "AASLD 2014: Acute liver failure diagnostic criteria",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "hep_encephalopathy",
+          "category": "clinical_finding",
+          "data_type": "Mental Status",
+          "criterion": "Hepatic encephalopathy: confusion, asterixis, somnolence, or coma (West Haven Grade I-IV)",
+          "detail": "Grade I: mild confusion, sleep disturbance. Grade II: lethargy, moderate confusion. Grade III: marked confusion, incoherent. Grade IV: coma. Grades III-IV correspond to 'with coma' codes.",
+          "source": "AASLD_LIVER",
+          "source_detail": "AASLD/Vilstrup 2014: Hepatic encephalopathy grading",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "hep_ammonia",
+          "category": "laboratory",
+          "data_type": "Ammonia",
+          "criterion": "Elevated serum ammonia level",
+          "detail": "Supports hepatic encephalopathy diagnosis but is NOT required. Ammonia levels correlate poorly with encephalopathy grade. Clinical assessment is more reliable.",
+          "source": "AASLD_LIVER",
+          "source_detail": "AASLD: Ammonia as supportive but not diagnostic biomarker",
+          "required": false,
+          "evidence_weight": "moderate"
+        },
+        {
+          "id": "hep_liver_labs",
+          "category": "laboratory",
+          "data_type": "Hepatic Panel",
+          "criterion": "Elevated AST/ALT (often > 10x ULN in acute failure), elevated bilirubin, low albumin",
+          "detail": "Acute liver failure: massive aminotransferase elevation. Chronic failure: may have normal or mildly elevated enzymes with low albumin and high bilirubin.",
+          "source": "AASLD_LIVER",
+          "source_detail": "AASLD 2014: Laboratory assessment in hepatic failure",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "hep_doc_coma",
+          "requirement": "Document whether hepatic failure is WITH COMA or WITHOUT COMA. K72.00 (without coma) vs K72.01 (with coma) \u2014 both MCC, but accuracy is essential. West Haven Grade III-IV = 'with coma.'",
+          "insufficient_terms": [
+            "liver failure",
+            "hepatic failure NOS",
+            "hepatic dysfunction"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q2 2018 p.16: Hepatic failure with/without coma documentation"
+        },
+        {
+          "id": "hep_doc_etiology",
+          "requirement": "Document the ETIOLOGY: alcoholic (K70.41), toxic/drug-induced (K71.11), or unspecified (K72.x). For acute vs chronic: K72.0x (acute/subacute) vs K72.11 (chronic) vs K72.91 (unspecified).",
+          "insufficient_terms": [
+            "liver failure NOS"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.11: Liver disease coding by etiology and chronicity"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "K7201",
+          "description": "Acute and subacute hepatic failure with coma",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Acute liver failure (< 26 weeks onset) + INR \u2265 1.5 + hepatic encephalopathy Grade III-IV",
+          "upgrade_from": "K7200",
+          "upgrade_evidence": "Document 'with coma' if encephalopathy is Grade III or IV"
+        },
+        {
+          "code": "K7200",
+          "description": "Acute and subacute hepatic failure without coma",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Acute liver failure + INR \u2265 1.5 + encephalopathy absent or Grade I-II"
+        },
+        {
+          "code": "K7041",
+          "description": "Alcoholic hepatic failure with coma",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Alcoholic etiology documented + hepatic failure + coma/severe encephalopathy",
+          "upgrade_from": "K7291",
+          "upgrade_evidence": "Specify alcoholic etiology when documented"
+        },
+        {
+          "code": "K7111",
+          "description": "Toxic liver disease with hepatic necrosis, with coma",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Drug/toxin identified (acetaminophen, etc.) causing hepatic necrosis and coma"
+        },
+        {
+          "code": "K7291",
+          "description": "Hepatic failure, unspecified with coma",
+          "cc_mcc": "MCC",
+          "specificity_note": "MCC but unspecified etiology and chronicity. Query for acute vs chronic and cause."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Elevated INR and encephalopathy but 'hepatic failure' not documented",
+          "query": "The patient has INR of [VALUE], bilirubin of [VALUE], and [encephalopathy grade/AMS]. Does this represent hepatic failure? If so, is this acute, chronic, or acute-on-chronic? What is the etiology?",
+          "source": "AASLD 2014 + CODING_CLINIC Q2 2018 p.16"
+        },
+        {
+          "trigger": "Hepatic failure documented without coma status specified",
+          "query": "You documented 'hepatic failure.' The patient's encephalopathy is currently [grade/description]. For coding accuracy, is this hepatic failure with or without coma? (West Haven Grade III-IV = with coma)",
+          "source": "CODING_CLINIC Q2 2018 p.16"
+        }
+      ],
+      "common_pitfalls": [
+        "ALL hepatic failure codes in this family are MCC \u2014 focus is on accuracy of coma status and etiology, not tier change.",
+        "'Hepatic encephalopathy' without hepatic failure: code G93.41 (metabolic encephalopathy, MCC) + underlying liver disease. This is different from K72.x (hepatic failure).",
+        "Cirrhosis (K74.x) is NOT the same as hepatic failure (K72.x). Cirrhosis is the underlying disease; hepatic failure is the decompensation.",
+        "Acetaminophen overdose causing hepatic failure: code K71.11 (toxic liver disease) + T39.1x (acetaminophen adverse effect/poisoning).",
+        "'With coma' includes West Haven Grade III-IV encephalopathy \u2014 document the grade or use 'coma' explicitly."
+      ],
+      "context_modifiers": {
+        "with_aki": "Hepatorenal syndrome: often accompanied by AKI (N17.x). Code both. Type 1 HRS has MCC impact through AKI.",
+        "with_dic": "Hepatic failure can cause DIC (D65, MCC). Document the coagulopathy etiology and whether DIC criteria are met.",
+        "with_sepsis": "Cirrhotic patients with SBP may develop sepsis + hepatic failure. Code the infection, sepsis, and hepatic failure separately."
+      }
     },
     {
       "id": "dic_coagulopathy",
@@ -2285,12 +3029,125 @@
         "D69"
       ],
       "notes": "D65 DIC, D68 other coag defects, D69 purpura/hemorrhagic",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "dic_isth",
+          "category": "laboratory",
+          "data_type": "ISTH DIC Score",
+          "criterion": "ISTH DIC score \u2265 5: platelets, fibrin markers (D-dimer/FDP), prolonged PT, fibrinogen",
+          "detail": "Platelet count (>100K=0, 50-100K=1, <50K=2), D-dimer (normal=0, moderate=2, marked=3), PT prolonged (<3s=0, 3-6s=1, >6s=2), fibrinogen (>1g/L=0, <1g/L=1). Score \u22655 = overt DIC.",
+          "source": "ISTH_DIC",
+          "source_detail": "ISTH Scoring System: Taylor et al. Thromb Haemost 2001;86:1327-1330",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "dic_thrombocytopenia",
+          "category": "laboratory",
+          "data_type": "Platelet Count",
+          "criterion": "Significant thrombocytopenia: platelets < 100,000/\u03bcL with declining trend",
+          "detail": "Isolated thrombocytopenia has many causes. In DIC, the trend (consumption) matters more than a single value.",
+          "threshold": {
+            "metric": "Platelets",
+            "operator": "<",
+            "value": 100000,
+            "unit": "/\u03bcL"
+          },
+          "source": "ISTH_DIC",
+          "source_detail": "ISTH: Platelet count as DIC scoring component",
+          "required": false,
+          "evidence_weight": "moderate"
+        },
+        {
+          "id": "dic_coag_studies",
+          "category": "laboratory",
+          "data_type": "Coagulation Panel",
+          "criterion": "Prolonged PT/INR and/or aPTT, elevated D-dimer/FDP, low fibrinogen",
+          "detail": "Consumption of clotting factors produces prolonged clotting times. Low fibrinogen (< 150 mg/dL) is concerning; < 100 mg/dL is severe.",
+          "source": "ISTH_DIC",
+          "source_detail": "ISTH: Coagulation parameters in DIC diagnosis",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "dic_doc_explicit",
+          "requirement": "Provider must explicitly document 'DIC' or 'disseminated intravascular coagulation.' D65 is the ONLY MCC in this family. All other coagulopathy codes (D68.x, D69.x) are CC only.",
+          "insufficient_terms": [
+            "coagulopathy",
+            "coagulopathic",
+            "elevated INR",
+            "low platelets",
+            "consumption coagulopathy"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q3 2013 p.22: DIC vs coagulopathy documentation"
+        },
+        {
+          "id": "dic_doc_type",
+          "requirement": "For non-DIC coagulopathy, document the specific type: acquired hemophilia (D68.311), antiphospholipid syndrome (D68.61), VWD (D68.0x), ITP (D69.3), factor deficiency (D68.2), or drug-related (D68.32).",
+          "insufficient_terms": [
+            "bleeding disorder",
+            "thrombocytopenia NOS"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.3: Blood/immune coding \u2014 specify the coagulopathy type"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "D65",
+          "description": "Disseminated intravascular coagulation",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "ISTH score \u2265 5 OR clinical DIC with consumption pattern: thrombocytopenia + elevated D-dimer + prolonged PT + low fibrinogen",
+          "specificity_note": "The ONLY MCC in this entire family. Critical distinction from general coagulopathy (CC)."
+        },
+        {
+          "code": "D68311",
+          "description": "Acquired hemophilia",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Factor VIII inhibitor antibody with hemorrhagic presentation",
+          "specificity_note": "CC \u2014 rare but clinically important. Requires mixing study and factor level."
+        },
+        {
+          "code": "D6861",
+          "description": "Antiphospholipid syndrome",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Lupus anticoagulant positive, anticardiolipin antibodies, with thrombotic event",
+          "specificity_note": "CC \u2014 both thrombotic and hemorrhagic manifestations possible."
+        },
+        {
+          "code": "D689",
+          "description": "Coagulation defect, unspecified",
+          "cc_mcc": "CC",
+          "specificity_note": "CC \u2014 generic. Query for DIC (MCC) when consumption pattern is present, or specify the coagulopathy type."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Lab pattern suggests DIC (\u2193 platelets, \u2191 D-dimer, \u2191 PT, \u2193 fibrinogen) but only 'coagulopathy' documented",
+          "query": "The patient has platelets [VALUE], D-dimer [VALUE], PT [VALUE], fibrinogen [VALUE]. This laboratory pattern is consistent with disseminated intravascular coagulation. Does this represent DIC?",
+          "source": "ISTH DIC scoring + CODING_CLINIC Q3 2013 p.22"
+        },
+        {
+          "trigger": "Prolonged INR on anticoagulants \u2014 unclear if coagulopathy vs therapeutic effect",
+          "query": "The patient's INR is [VALUE] while on [anticoagulant]. Is this a therapeutic anticoagulation effect, or does this represent a coagulopathy (D68.32)? The distinction affects code assignment.",
+          "source": "CODING_CLINIC Q4 2016 p.64"
+        }
+      ],
+      "common_pitfalls": [
+        "D65 (DIC) is the ONLY MCC in this family. All other D68/D69 codes are CC. The DIC vs coagulopathy distinction is the single most impactful query in this family.",
+        "Thrombocytopenia alone is NOT coagulopathy and may not even be CC/MCC \u2014 it depends on the cause and code.",
+        "ITP (D69.3) is CC. HIT (heparin-induced thrombocytopenia) uses D75.82 which is NOT in this family.",
+        "Drug-induced coagulopathy (D68.32) from anticoagulant use is CC \u2014 document this when supratherapeutic anticoagulation causes hemorrhagic complications.",
+        "DIC is always secondary to an underlying condition (sepsis, malignancy, trauma). Code the underlying cause as well."
+      ],
+      "context_modifiers": {
+        "with_sepsis": "DIC is commonly triggered by sepsis. Code A41.x + R65.2x (severe sepsis) + D65. The DIC may be the documented organ dysfunction for severe sepsis criteria.",
+        "with_liver_disease": "Liver disease causes coagulopathy from impaired synthesis, NOT consumption. This is typically D68.4 (acquired deficiency), not D65 (DIC). Distinguish the mechanism.",
+        "with_malignancy": "Malignancy-associated DIC: code the neoplasm + D65. Chronic/compensated DIC in cancer may be documented differently from acute DIC."
+      }
     },
     {
       "id": "blood_loss_anemia",
@@ -2307,12 +3164,95 @@
         "D62"
       ],
       "notes": "D62: Single code, CC \u2014 commonly queried",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "bla_hgb_drop",
+          "category": "laboratory",
+          "data_type": "Hemoglobin",
+          "criterion": "Hemoglobin drop \u2265 2 g/dL from baseline or Hgb requiring transfusion",
+          "detail": "Acute drop in hemoglobin/hematocrit in the setting of identified or suspected bleeding. Serial labs show the trend.",
+          "threshold": {
+            "metric": "Hemoglobin drop",
+            "operator": ">=",
+            "value": 2,
+            "unit": "g/dL"
+          },
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2016 p.47: Acute blood loss anemia documentation",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "bla_transfusion",
+          "category": "intervention",
+          "data_type": "Blood Transfusion",
+          "criterion": "Packed red blood cell transfusion for acute blood loss",
+          "detail": "Transfusion strongly supports the diagnosis. Document that transfusion is for acute blood loss, not chronic anemia.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q1 2019 p.14: Transfusion and anemia coding",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "bla_source",
+          "category": "clinical_finding",
+          "data_type": "Bleeding Source",
+          "criterion": "Identifiable bleeding source: GI, surgical, traumatic, postpartum, or other",
+          "detail": "The bleeding source should be coded separately. D62 captures the anemia consequence, not the source.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2016 p.47: Code the source and the anemia separately",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "bla_doc_explicit",
+          "requirement": "Provider must document 'acute blood loss anemia.' A hemoglobin drop or transfusion alone is insufficient for code assignment. The diagnosis must be explicitly stated.",
+          "insufficient_terms": [
+            "anemia",
+            "low hemoglobin",
+            "blood loss",
+            "required transfusion",
+            "Hgb drop",
+            "posthemorrhagic"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2016 p.47; Q1 2019 p.14: Explicit documentation required for D62"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "D62",
+          "description": "Acute posthemorrhagic anemia",
+          "cc_mcc": "CC",
+          "specificity_note": "Single code, CC. Commonly under-documented \u2014 query whenever significant Hgb drop with active bleeding or surgical blood loss."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Hemoglobin drops \u2265 2 g/dL with bleeding but no anemia diagnosis",
+          "query": "The patient's hemoglobin dropped from [BASELINE] to [NADIR] g/dL in the setting of [bleeding source / surgery]. Does this represent acute blood loss anemia? The patient received [# units] pRBC transfusion.",
+          "source": "CODING_CLINIC Q4 2016 p.47"
+        },
+        {
+          "trigger": "Transfusion given during admission without acute anemia documented",
+          "query": "The patient received [# units] packed red blood cell transfusion on [DATE] for [indication]. Does this represent acute blood loss anemia? If so, please document the diagnosis.",
+          "source": "CODING_CLINIC Q1 2019 p.14"
+        }
+      ],
+      "common_pitfalls": [
+        "D62 is one of the most under-documented CCs. Anytime a patient bleeds significantly and Hgb drops, query for acute blood loss anemia.",
+        "D62 is coded IN ADDITION to the bleeding source \u2014 it's the systemic consequence (anemia), not the event (hemorrhage).",
+        "Chronic anemia (D50-D64 other codes) is different from acute blood loss anemia. Patients can have both if they have chronic anemia with acute-on-chronic drop.",
+        "Post-surgical Hgb drops: expected blood loss during surgery can still qualify as acute blood loss anemia if clinically significant.",
+        "D62 is CC \u2014 it adds severity impact to any DRG. Combined with an MCC bleeding source (e.g., K25.0 gastric ulcer with hemorrhage), the impact is cumulative."
+      ],
+      "context_modifiers": {
+        "with_gi_hemorrhage": "GI bleed + Hgb drop: code both the GI hemorrhage source AND D62. The GI source may be MCC; D62 adds CC on top.",
+        "post_surgical": "Expected surgical blood loss can still produce acute blood loss anemia. The threshold is clinical significance (need for transfusion, symptomatic anemia).",
+        "with_anticoagulation": "Bleeding on anticoagulants: code the drug adverse effect (T45.x) + bleeding source + D62 for the anemia."
+      }
     },
     {
       "id": "diabetes_complications",
@@ -2361,12 +3301,154 @@
         "E13"
       ],
       "notes": "E08\u2013E13: By type and complication (neuropathy, CKD, PVD, etc.)",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "dm_dka",
+          "category": "laboratory",
+          "data_type": "Metabolic Panel / ABG",
+          "criterion": "DKA: Blood glucose typically > 250 mg/dL, pH < 7.30, bicarbonate < 18 mEq/L, anion gap > 12, positive serum/urine ketones",
+          "detail": "DKA requires all three: hyperglycemia, ketosis, and acidosis. Euglycemic DKA (SGLT2 inhibitors) may have near-normal glucose.",
+          "source": "ADA",
+          "source_detail": "ADA Standards of Care 2024: DKA diagnostic criteria",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "dm_hhs",
+          "category": "laboratory",
+          "data_type": "Metabolic Panel",
+          "criterion": "HHS: Blood glucose > 600 mg/dL, serum osmolality > 320 mOsm/kg, pH > 7.30, minimal ketones",
+          "detail": "Hyperosmolar hyperglycemic state. Distinguished from DKA by absence of significant ketoacidosis and higher glucose/osmolality.",
+          "threshold": {
+            "metric": "Glucose",
+            "operator": ">",
+            "value": 600,
+            "unit": "mg/dL"
+          },
+          "source": "ADA",
+          "source_detail": "ADA Standards of Care 2024: HHS diagnostic criteria",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "dm_hypoglycemia_coma",
+          "category": "clinical_finding",
+          "data_type": "Blood Glucose / Mental Status",
+          "criterion": "Severe hypoglycemia with coma: blood glucose typically < 54 mg/dL with altered consciousness",
+          "detail": "Hypoglycemia with coma (E08-E13.641) is MCC. Requires documented altered mental status or loss of consciousness due to low blood glucose.",
+          "threshold": {
+            "metric": "Blood glucose",
+            "operator": "<",
+            "value": 54,
+            "unit": "mg/dL"
+          },
+          "source": "ADA",
+          "source_detail": "ADA: Severe hypoglycemia \u2014 requires assistance from another person",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "dm_gangrene",
+          "category": "clinical_finding",
+          "data_type": "Wound Assessment",
+          "criterion": "Diabetic peripheral angiopathy with gangrene: tissue necrosis due to arterial insufficiency in diabetic patient",
+          "detail": "Gangrene codes (E08-E13.52) are CC. Requires documented gangrene in the context of diabetic peripheral vascular disease.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2018 p.23: Diabetic gangrene documentation",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "dm_doc_type",
+          "requirement": "Document the DIABETES TYPE: Type 1 (E10), Type 2 (E11), due to underlying condition (E08), drug-induced (E09), or other (E13). 'Diabetes' alone defaults to E11 (Type 2) per ICD-10 convention.",
+          "insufficient_terms": [
+            "diabetes",
+            "DM",
+            "hyperglycemia"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.4.a: Diabetes mellitus code assignment by type"
+        },
+        {
+          "id": "dm_doc_complication",
+          "requirement": "Document the specific COMPLICATION: DKA (with/without coma), HHS (with/without coma), hypoglycemia with coma, or gangrene. These are the only diabetes codes that are CC/MCC. General 'diabetes with complications' is insufficient.",
+          "insufficient_terms": [
+            "uncontrolled diabetes",
+            "diabetes with complications"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q2 2016 p.36: Diabetes complication documentation requirements"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "E1111",
+          "description": "Type 2 DM with DKA with coma",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "DKA criteria met + altered consciousness or coma + Type 2 diabetes documented",
+          "upgrade_from": "E1110",
+          "upgrade_evidence": "Document 'with coma' when AMS is present during DKA"
+        },
+        {
+          "code": "E1110",
+          "description": "Type 2 DM with DKA without coma",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "DKA criteria met (hyperglycemia + acidosis + ketosis) without coma",
+          "specificity_note": "MCC \u2014 most common diabetes MCC code in inpatient settings"
+        },
+        {
+          "code": "E1100",
+          "description": "Type 2 DM with HHS without coma",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Glucose > 600, osmolality > 320, pH > 7.30, minimal ketones",
+          "specificity_note": "MCC \u2014 distinguish from DKA by the absence of significant acidosis"
+        },
+        {
+          "code": "E11641",
+          "description": "Type 2 DM with hypoglycemia with coma",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Severe hypoglycemia causing loss of consciousness or severe AMS",
+          "specificity_note": "MCC \u2014 document the coma/AMS explicitly linked to hypoglycemia"
+        },
+        {
+          "code": "E1152",
+          "description": "Type 2 DM with diabetic peripheral angiopathy with gangrene",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Diabetic PVD with tissue gangrene documented",
+          "specificity_note": "CC \u2014 lower impact than DKA/HHS (MCC), but important to capture"
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "DKA lab values present but only 'hyperglycemia' or 'uncontrolled diabetes' documented",
+          "query": "Labs show glucose [VALUE], pH [VALUE], bicarb [VALUE], anion gap [VALUE], ketones [VALUE]. This pattern is consistent with diabetic ketoacidosis. Does this represent DKA? If so, is this with or without coma?",
+          "source": "ADA Standards + CODING_CLINIC Q2 2016 p.36"
+        },
+        {
+          "trigger": "Severe hypoglycemia with AMS but 'hypoglycemia with coma' not documented",
+          "query": "The patient had a blood glucose of [VALUE] mg/dL on [DATE] with [AMS description]. You documented 'hypoglycemia.' Did the patient have altered consciousness or coma due to the hypoglycemia? If so, this can be captured more specifically.",
+          "source": "CODING_CLINIC Q4 2017 p.42"
+        },
+        {
+          "trigger": "Diabetes type not documented in patient with DKA",
+          "query": "The patient presented with DKA. Is this Type 1 or Type 2 diabetes mellitus? The type determines the specific code assignment.",
+          "source": "ICD10_GUIDELINES I.C.4.a"
+        }
+      ],
+      "common_pitfalls": [
+        "Only DKA, HHS, hypoglycemia with coma, and gangrene codes are CC/MCC in the diabetes chapter. General diabetes complications (neuropathy, nephropathy, retinopathy) are NOT CC/MCC.",
+        "'Uncontrolled diabetes' is NOT a codeable complication \u2014 it does not map to any specific CC/MCC code. Must specify DKA, HHS, or the specific complication.",
+        "DKA in Type 2 diabetes: Yes, Type 2 patients can develop DKA. Code E11.10/E11.11, not E10.x (Type 1).",
+        "HHS (E11.00/E11.01) and DKA (E11.10/E11.11) are mutually exclusive per ICD-10 conventions \u2014 code the predominant presentation.",
+        "'With coma' in DKA/HHS/hypoglycemia adds specificity but does NOT change CC/MCC tier \u2014 all are already MCC."
+      ],
+      "context_modifiers": {
+        "with_aki": "DKA/HHS frequently causes AKI from dehydration. Code both the diabetic crisis (E11.1x/E11.0x) and AKI (N17.x). The AKI adds its own DRG impact.",
+        "with_sepsis": "Diabetic crisis triggered by infection/sepsis: code the infection, the sepsis if criteria met, and the diabetes complication. Document the relationship.",
+        "with_ckd": "Diabetes with CKD: E11.22 (Type 2 DM with diabetic CKD) is NOT CC/MCC. But CKD stage code (N18.x) may be CC depending on stage."
+      }
     },
     {
       "id": "electrolyte",
@@ -2390,12 +3472,129 @@
         "E87"
       ],
       "notes": "E87.x: Hypo/hypernatremia, acidosis, alkalosis, volume depletion",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "lyte_sodium",
+          "category": "laboratory",
+          "data_type": "Serum Sodium",
+          "criterion": "Hypernatremia (Na > 145 mEq/L) or Hyponatremia (Na < 135 mEq/L)",
+          "detail": "Severity: Mild 130-134, Moderate 125-129, Severe < 125 mEq/L (hyponatremia). Symptoms include AMS, seizures, cerebral edema.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q1 2014 p.22: Electrolyte disorder documentation",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "lyte_acidosis",
+          "category": "laboratory",
+          "data_type": "ABG / BMP",
+          "criterion": "Metabolic acidosis: pH < 7.35 with low bicarbonate (< 22 mEq/L) and/or elevated anion gap (> 12)",
+          "detail": "E87.2x codes specify acidosis type: unspecified (E87.20), acute (E87.21), chronic (E87.22), other (E87.29). Acute metabolic acidosis is most clinically significant.",
+          "threshold": {
+            "metric": "pH",
+            "operator": "<",
+            "value": 7.35,
+            "unit": ""
+          },
+          "source": "CODING_CLINIC",
+          "source_detail": "Q2 2020 p.22: Acidosis type coding",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "lyte_alkalosis",
+          "category": "laboratory",
+          "data_type": "ABG / BMP",
+          "criterion": "Alkalosis: pH > 7.45 \u2014 metabolic (high bicarbonate) or respiratory (low PaCO2)",
+          "detail": "E87.3 covers alkalosis. Document metabolic vs respiratory type and the cause (vomiting, diuretics, hyperventilation).",
+          "threshold": {
+            "metric": "pH",
+            "operator": ">",
+            "value": 7.45,
+            "unit": ""
+          },
+          "source": "CODING_CLINIC",
+          "source_detail": "General: Alkalosis coding",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "lyte_doc_specific",
+          "requirement": "Document the SPECIFIC electrolyte disorder: hypernatremia (E87.0), hyponatremia (E87.1), acidosis (E87.2x), alkalosis (E87.3), mixed acid-base (E87.4). 'Electrolyte imbalance' alone is not codeable to a CC.",
+          "insufficient_terms": [
+            "electrolyte imbalance",
+            "abnormal labs",
+            "metabolic derangement"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q1 2014 p.22: Specificity required for electrolyte disorder coding"
+        },
+        {
+          "id": "lyte_doc_acidity",
+          "requirement": "For acidosis, specify the TYPE: acute metabolic (E87.21), chronic metabolic (E87.22), or unspecified (E87.20). These FY2023 expanded codes require documentation of acuity.",
+          "insufficient_terms": [
+            "acidosis NOS",
+            "metabolic acidosis"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "FY2023: Expanded acidosis codes with acuity specification"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "E870",
+          "description": "Hyperosmolality and hypernatremia",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Serum sodium > 145 mEq/L and/or serum osmolality > 295 mOsm/kg"
+        },
+        {
+          "code": "E871",
+          "description": "Hypo-osmolality and hyponatremia",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Serum sodium < 135 mEq/L \u2014 document severity and symptoms"
+        },
+        {
+          "code": "E8721",
+          "description": "Acute metabolic acidosis",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "pH < 7.35 with low bicarb, acute onset \u2014 from DKA, lactic acidosis, renal failure, toxins",
+          "upgrade_from": "E8720",
+          "upgrade_evidence": "Specify 'acute' metabolic acidosis for FY2023+ coding accuracy"
+        },
+        {
+          "code": "E874",
+          "description": "Mixed disorder of acid-base balance",
+          "cc_mcc": "CC",
+          "distinguishing_evidence": "Concurrent metabolic acidosis + respiratory alkalosis, or other combination",
+          "specificity_note": "CC \u2014 used when two or more acid-base disturbances coexist"
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Sodium significantly abnormal but no electrolyte diagnosis documented",
+          "query": "Serum sodium is [VALUE] mEq/L on [DATE]. Does this represent [hypernatremia/hyponatremia]? If so, please document the diagnosis and the clinical significance.",
+          "source": "CODING_CLINIC Q1 2014 p.22"
+        },
+        {
+          "trigger": "ABG shows acidosis but only the underlying cause is documented, not the acidosis itself",
+          "query": "ABG shows pH [VALUE], HCO3 [VALUE], anion gap [VALUE]. In addition to [underlying cause \u2014 DKA, sepsis, renal failure], does the patient have metabolic acidosis that should be documented as a diagnosis? If so, is this acute or chronic?",
+          "source": "CODING_CLINIC Q2 2020 p.22"
+        }
+      ],
+      "common_pitfalls": [
+        "All electrolyte disorder codes (E87.x) are CC only \u2014 none are MCC. But they're commonly present and add cumulative CC impact.",
+        "Hypokalemia (E87.6) and hyperkalemia (E87.5) are NOT CC/MCC. Only sodium disorders, acidosis, alkalosis, and mixed acid-base qualify.",
+        "Metabolic acidosis in DKA is inherent to the DKA diagnosis \u2014 some facilities query for E87.2x separately, but it's already captured in the DKA code.",
+        "Lactic acidosis from sepsis: code E87.2x separately from the sepsis. The acidosis is a distinct clinical entity.",
+        "Volume depletion (E86.x) is NOT the same as electrolyte disorder and is NOT CC/MCC."
+      ],
+      "context_modifiers": {
+        "with_aki": "AKI commonly causes metabolic acidosis and electrolyte disorders. Code both the AKI and the electrolyte disturbance.",
+        "with_sepsis": "Sepsis-related lactic acidosis: code E87.2x in addition to sepsis codes. Document the acidosis as a finding.",
+        "with_liver_disease": "Hepatic disease can cause hyponatremia and alkalosis. Code the electrolyte disorder separately from the liver disease."
+      }
     },
     {
       "id": "sickle_cell",
@@ -2447,12 +3646,120 @@
         "D57"
       ],
       "notes": "D57.x: Hb-SS, Hb-SC, thalassemia with/without crisis",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "scd_crisis",
+          "category": "clinical_finding",
+          "data_type": "Vaso-Occlusive Crisis",
+          "criterion": "Vaso-occlusive crisis: severe pain requiring IV opioid analgesics, typically in bones, chest, abdomen",
+          "detail": "The hallmark of sickle cell disease. Pain crisis requires documentation of 'crisis' or 'vaso-occlusive episode.' Only 'with crisis' codes are CC/MCC.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q3 2014 p.15: Sickle cell with/without crisis distinction",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "scd_acs",
+          "category": "clinical_finding",
+          "data_type": "Acute Chest Syndrome",
+          "criterion": "Acute chest syndrome: new pulmonary infiltrate + fever and/or respiratory symptoms in SCD patient",
+          "detail": "Acute chest syndrome (D57.01, D57.211, etc.) is a specific crisis type. Requires new infiltrate on CXR plus at least one: fever, chest pain, tachypnea, cough, hypoxia.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q2 2017 p.19: Acute chest syndrome documentation",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "scd_hgb_electrophoresis",
+          "category": "laboratory",
+          "data_type": "Hemoglobin Electrophoresis",
+          "criterion": "Hemoglobin electrophoresis confirming sickle cell genotype: Hb-SS, Hb-SC, Hb-S/beta-thal",
+          "detail": "The genotype determines the specific code category: D57.0 (Hb-SS), D57.2 (Hb-SC), D57.4 (Hb-S/thalassemia). Documentation should specify genotype.",
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.3: Sickle cell coding by genotype",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "scd_doc_crisis",
+          "requirement": "Provider must document 'with crisis' for the code to be MCC. Sickle cell WITHOUT crisis is NOT CC/MCC. The crisis type should be specified: vaso-occlusive, acute chest syndrome, splenic sequestration, cerebral vascular involvement, dactylitis.",
+          "insufficient_terms": [
+            "sickle cell disease",
+            "sickle cell pain",
+            "SCD"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q3 2014 p.15: 'With crisis' documentation required for CC/MCC status"
+        },
+        {
+          "id": "scd_doc_genotype",
+          "requirement": "Document the sickle cell GENOTYPE: Hb-SS (D57.0x), Hb-SC (D57.2x), Hb-S/beta-thal (D57.4x). 'Sickle cell disease' alone maps to D57.1 (without crisis, not CC/MCC) or unspecified.",
+          "insufficient_terms": [
+            "sickle cell",
+            "SCD NOS"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.3: Code the specific genotype when known"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "D5701",
+          "description": "Hb-SS disease with acute chest syndrome",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Hb-SS genotype + new pulmonary infiltrate + respiratory symptoms/fever",
+          "upgrade_from": "D5700",
+          "upgrade_evidence": "Specify acute chest syndrome as the crisis type when pulmonary infiltrate present"
+        },
+        {
+          "code": "D5703",
+          "description": "Hb-SS disease with cerebral vascular involvement",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Hb-SS with stroke, TIA, or cerebral vasculopathy",
+          "upgrade_from": "D5700",
+          "upgrade_evidence": "Document cerebral vascular involvement when neurological complications occur"
+        },
+        {
+          "code": "D5700",
+          "description": "Hb-SS disease with crisis, unspecified",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Vaso-occlusive crisis without specified complication type",
+          "specificity_note": "MCC \u2014 but specifying the crisis type (ACS, splenic, cerebral, dactylitis) is more accurate"
+        },
+        {
+          "code": "D57219",
+          "description": "Sickle-cell/Hb-C disease with crisis, unspecified",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Hb-SC genotype with vaso-occlusive crisis",
+          "specificity_note": "MCC \u2014 specify crisis type when possible"
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Sickle cell patient admitted with pain but 'crisis' not documented",
+          "query": "The patient with sickle cell disease presented with [severe pain requiring IV analgesics / chest symptoms / etc.]. Does this represent a sickle cell crisis? If so, what type \u2014 vaso-occlusive, acute chest syndrome, splenic sequestration, or other?",
+          "source": "CODING_CLINIC Q3 2014 p.15"
+        },
+        {
+          "trigger": "Sickle cell crisis documented without specifying genotype",
+          "query": "You documented 'sickle cell crisis.' For coding accuracy, what is the patient's sickle cell genotype \u2014 Hb-SS, Hb-SC, Hb-S/beta-thalassemia? This determines the specific code category.",
+          "source": "ICD10_GUIDELINES I.C.3"
+        }
+      ],
+      "common_pitfalls": [
+        "Sickle cell WITHOUT crisis is NOT CC/MCC. The word 'crisis' in the documentation is what drives the MCC designation.",
+        "ALL sickle cell 'with crisis' codes are MCC \u2014 there is no CC tier in this family. The distinction is MCC (with crisis) vs nothing (without crisis).",
+        "Sickle cell trait (D57.3) is completely different from sickle cell disease and is NOT CC/MCC.",
+        "Acute chest syndrome is a specific crisis type requiring new pulmonary infiltrate \u2014 don't code it based on chest pain alone.",
+        "FY2024 added beta-zero (D57.43x) and beta-plus (D57.45x) thalassemia subcategories \u2014 document the specific beta-thal subtype when known."
+      ],
+      "context_modifiers": {
+        "with_resp_failure": "Acute chest syndrome may cause respiratory failure. Code both the sickle cell crisis (D57.x1) and respiratory failure (J96.x). Both contribute MCC impact.",
+        "with_stroke": "Sickle cell cerebrovascular crisis (D57.x3): code the sickle cell code + stroke code (I63.x) if infarction documented. Major prognostic and coding impact.",
+        "with_sepsis": "SCD patients are immunocompromised (functional asplenia). If sepsis develops during crisis, code sepsis separately \u2014 it drives a different DRG pathway."
+      }
     },
     {
       "id": "cardiac_arrest",
@@ -2471,12 +3778,111 @@
         "I46"
       ],
       "notes": "I46.x: VF, VT, asystole \u2014 only assigned if patient survives",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "ca_cessation",
+          "category": "clinical_finding",
+          "data_type": "Clinical Event",
+          "criterion": "Cessation of cardiac mechanical activity: no pulse, no organized cardiac rhythm, unresponsive",
+          "detail": "Cardiac arrest requires documented loss of pulse and cardiac activity. Differentiate from severe bradycardia or hypotension.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2013 p.102: Cardiac arrest documentation requirements",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "ca_cpr",
+          "category": "intervention",
+          "data_type": "Resuscitation",
+          "criterion": "CPR initiated (chest compressions, defibrillation, ACLS protocol)",
+          "detail": "Resuscitation efforts strongly support cardiac arrest diagnosis. Document the rhythm (VF/VT, PEA, asystole) and ROSC if achieved.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2013 p.102: Resuscitation documentation",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "ca_rhythm",
+          "category": "clinical_finding",
+          "data_type": "Cardiac Rhythm",
+          "criterion": "Documented arrest rhythm: ventricular fibrillation, ventricular tachycardia (pulseless), PEA, or asystole",
+          "detail": "The arrest rhythm is clinically important but does NOT change the ICD-10 code for cardiac arrest (I46.x). VF arrest has separate code I49.01.",
+          "source": "CODING_CLINIC",
+          "source_detail": "General: Arrest rhythm documentation",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "ca_doc_explicit",
+          "requirement": "Provider must document 'cardiac arrest.' CPR alone does not automatically equal cardiac arrest coding. The diagnosis must be explicitly stated.",
+          "insufficient_terms": [
+            "code blue",
+            "found unresponsive",
+            "required CPR"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2013 p.102: 'Cardiac arrest' must be documented for I46.x assignment"
+        },
+        {
+          "id": "ca_doc_cause",
+          "requirement": "Document the underlying CAUSE: cardiac condition (I46.2), other underlying condition (I46.8), or unspecified (I46.9). The underlying cause determines the code.",
+          "insufficient_terms": [
+            "cardiac arrest NOS"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "Section I.C.9: Cardiac arrest \u2014 code the underlying cause"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "I462",
+          "description": "Cardiac arrest due to underlying cardiac condition",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Arrest caused by MI, arrhythmia, HF, or other primary cardiac pathology",
+          "upgrade_from": "I469",
+          "upgrade_evidence": "Specify cardiac etiology when the cause is a primary cardiac condition"
+        },
+        {
+          "code": "I468",
+          "description": "Cardiac arrest due to other underlying condition",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Arrest caused by PE, respiratory failure, sepsis, hemorrhage, or other non-cardiac cause",
+          "upgrade_from": "I469",
+          "upgrade_evidence": "Specify non-cardiac etiology when identifiable"
+        },
+        {
+          "code": "I469",
+          "description": "Cardiac arrest, cause unspecified",
+          "cc_mcc": "MCC",
+          "specificity_note": "MCC \u2014 but specifying the underlying cause improves clinical accuracy. Query for cause."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "CPR performed but 'cardiac arrest' not explicitly documented",
+          "query": "The patient required CPR and ACLS interventions on [DATE]. The documented rhythm was [RHYTHM]. Does this event represent cardiac arrest? If so, what was the underlying cause?",
+          "source": "CODING_CLINIC Q4 2013 p.102"
+        },
+        {
+          "trigger": "Cardiac arrest documented but underlying cause not specified",
+          "query": "You documented 'cardiac arrest.' The clinical context suggests [MI / PE / respiratory failure / sepsis] as the underlying cause. Could you specify whether this was due to a cardiac condition or another underlying condition?",
+          "source": "ICD10_GUIDELINES I.C.9"
+        }
+      ],
+      "common_pitfalls": [
+        "I46.x codes are only assigned when the patient SURVIVES the arrest. If the patient dies, the underlying cause is the principal diagnosis, not the cardiac arrest.",
+        "Cardiac arrest as a complication of MI: sequence the MI first, cardiac arrest second (per I.C.9.e sequencing guidelines).",
+        "I46.x codes do NOT distinguish arrest rhythm (VF vs asystole). VF is separately coded as I49.01 if it occurs outside the arrest context.",
+        "'Code blue' or 'found pulseless' does not automatically equal cardiac arrest for coding \u2014 the provider must document 'cardiac arrest.'",
+        "Cardiac arrest occurring during a procedure: may need additional procedure complication code. Document the context."
+      ],
+      "context_modifiers": {
+        "with_mi": "Cardiac arrest due to MI: MI (I21.x) is principal, I46.2 is additional code. Both are MCC.",
+        "with_pe": "Cardiac arrest due to massive PE: code I26.x + I46.8. Sequencing depends on circumstances of admission.",
+        "with_resp_failure": "Respiratory arrest (R09.2) leading to cardiac arrest: code both. Distinguish respiratory arrest from cardiac arrest."
+      }
     },
     {
       "id": "shock",
@@ -2496,12 +3902,127 @@
         "R57"
       ],
       "notes": "R57.x: Cardiogenic, hypovolemic, other/unspecified",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "shock_hypotension",
+          "category": "vitals",
+          "data_type": "Blood Pressure",
+          "criterion": "Sustained hypotension: SBP < 90 mmHg or MAP < 65 mmHg despite adequate fluid resuscitation",
+          "detail": "Hypotension refractory to fluid resuscitation is the hemodynamic hallmark. Must be sustained, not transient.",
+          "threshold": {
+            "metric": "SBP",
+            "operator": "<",
+            "value": 90,
+            "unit": "mmHg"
+          },
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2014 p.22: Shock documentation requirements",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "shock_vasopressors",
+          "category": "intervention",
+          "data_type": "Vasopressor Support",
+          "criterion": "Vasopressor requirement to maintain adequate perfusion pressure",
+          "detail": "Need for vasopressors (norepinephrine, vasopressin, dopamine, epinephrine) indicates hemodynamic instability beyond fluid responsiveness.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2014 p.22: Vasopressor use supporting shock diagnosis",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "shock_perfusion",
+          "category": "laboratory",
+          "data_type": "Perfusion Markers",
+          "criterion": "End-organ hypoperfusion: elevated lactate > 2 mmol/L, oliguria, altered mental status, mottled skin",
+          "detail": "Tissue hypoperfusion markers support the diagnosis. Lactate trending is particularly useful for monitoring resuscitation adequacy.",
+          "source": "CODING_CLINIC",
+          "source_detail": "General: Perfusion assessment in shock",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "shock_doc_type",
+          "requirement": "Document the TYPE of shock: cardiogenic (R57.0, MCC), hypovolemic (R57.1, MCC), or other/unspecified (R57.8/R57.9). Septic shock uses R65.21 (NOT R57.x). Anaphylactic shock uses T78.2 (NOT R57.x).",
+          "insufficient_terms": [
+            "hypotension",
+            "hemodynamic instability",
+            "on pressors",
+            "requiring vasopressors"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q4 2014 p.22: Shock type documentation and code assignment"
+        },
+        {
+          "id": "shock_doc_explicit",
+          "requirement": "Provider must explicitly document 'shock.' Hypotension requiring vasopressors is NOT automatically coded as shock without the explicit diagnosis.",
+          "insufficient_terms": [
+            "low blood pressure",
+            "hypotension",
+            "hemodynamically unstable"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q2 2019 p.11: Shock vs hypotension documentation distinction"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "R570",
+          "description": "Cardiogenic shock",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Shock from cardiac pump failure: acute MI, acute HF, myocarditis, massive PE. Low CO, elevated filling pressures.",
+          "upgrade_from": "R579",
+          "upgrade_evidence": "Specify 'cardiogenic' when cardiac etiology is identified"
+        },
+        {
+          "code": "R571",
+          "description": "Hypovolemic shock",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Shock from volume loss: hemorrhage, severe dehydration, third-spacing. Low filling pressures.",
+          "upgrade_from": "R579",
+          "upgrade_evidence": "Specify 'hypovolemic' when volume loss is the cause"
+        },
+        {
+          "code": "R578",
+          "description": "Other shock",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Distributive shock not classified as septic (obstructive, neurogenic, etc.)",
+          "specificity_note": "MCC \u2014 used for shock types not captured by other codes"
+        },
+        {
+          "code": "R579",
+          "description": "Shock, unspecified",
+          "cc_mcc": "CC",
+          "specificity_note": "CC only \u2014 significantly lower impact than specified shock types (MCC). Always query for type."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Patient on vasopressors with hypotension but 'shock' not documented",
+          "query": "The patient required initiation of [vasopressor] on [DATE] for sustained hypotension (BP [VALUE]). Does this represent shock? If so, what type \u2014 cardiogenic, hypovolemic, or other?",
+          "source": "CODING_CLINIC Q4 2014 p.22"
+        },
+        {
+          "trigger": "Shock documented but type not specified",
+          "query": "You documented 'shock.' For coding accuracy, is this cardiogenic (from cardiac pump failure), hypovolemic (from blood/fluid loss), or another type? Note: septic shock is coded differently (R65.21).",
+          "source": "CODING_CLINIC Q2 2019 p.11"
+        }
+      ],
+      "common_pitfalls": [
+        "R57.9 (unspecified shock) is only CC. R57.0 (cardiogenic), R57.1 (hypovolemic), R57.8 (other) are all MCC. Specifying the type is a CC \u2192 MCC upgrade.",
+        "SEPTIC shock uses R65.21 (severe sepsis with septic shock), NOT R57.x. R57.x is for non-septic shock only.",
+        "Anaphylactic shock uses T78.2, NOT R57.x. Code to the specific shock etiology when available.",
+        "'Hypotension' (I95.x) is NOT shock. Shock requires documented tissue hypoperfusion, not just low blood pressure.",
+        "Shock is rarely a principal diagnosis \u2014 it's usually secondary to MI, PE, hemorrhage, etc. Code the underlying cause."
+      ],
+      "context_modifiers": {
+        "with_mi": "Cardiogenic shock from MI: code I21.x (MI) + R57.0 (cardiogenic shock). The MI is typically principal.",
+        "with_gi_hemorrhage": "Hypovolemic shock from GI bleeding: code the GI hemorrhage source + R57.1. Document the volume of blood loss.",
+        "with_pe": "Obstructive shock from massive PE: code I26.x + R57.8 (other shock). Distinguish from cardiogenic."
+      }
     },
     {
       "id": "ards",
@@ -2518,12 +4039,106 @@
         "J80"
       ],
       "notes": "J80: Single code, MCC \u2014 Berlin Definition criteria",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "ards_pf_ratio",
+          "category": "laboratory",
+          "data_type": "PaO2/FiO2 Ratio",
+          "criterion": "PaO2/FiO2 ratio \u2264 300 mmHg with PEEP \u2265 5 cm H2O",
+          "detail": "Berlin Definition severity: Mild 200-300, Moderate 100-200, Severe < 100. Must be assessed on mechanical ventilation with at least 5 cm PEEP.",
+          "threshold": {
+            "metric": "P/F Ratio",
+            "operator": "<=",
+            "value": 300,
+            "unit": "mmHg"
+          },
+          "source": "ARDS_BERLIN",
+          "source_detail": "ARDS Definition Task Force. JAMA 2012;307(23):2526-2533: Berlin Definition",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "ards_bilateral",
+          "category": "imaging",
+          "data_type": "Chest Imaging",
+          "criterion": "Bilateral opacities on CXR or CT not fully explained by effusions, atelectasis, or nodules",
+          "detail": "Must be bilateral. Unilateral infiltrate does not meet ARDS criteria. Opacities must be consistent with pulmonary edema.",
+          "source": "ARDS_BERLIN",
+          "source_detail": "Berlin Definition: Imaging criterion",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "ards_timing",
+          "category": "clinical_finding",
+          "data_type": "Onset",
+          "criterion": "Acute onset within 1 week of known clinical insult or new/worsening respiratory symptoms",
+          "detail": "Onset must be acute \u2014 within 7 days of a recognized trigger (pneumonia, sepsis, aspiration, trauma, pancreatitis, transfusion).",
+          "source": "ARDS_BERLIN",
+          "source_detail": "Berlin Definition: Timing criterion",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "ards_not_cardiac",
+          "category": "clinical_finding",
+          "data_type": "Edema Origin",
+          "criterion": "Respiratory failure NOT fully explained by cardiac failure or fluid overload",
+          "detail": "Requires objective assessment (echo, clinical context) to exclude hydrostatic pulmonary edema as the primary cause. Echo showing normal LV function supports ARDS over cardiogenic edema.",
+          "source": "ARDS_BERLIN",
+          "source_detail": "Berlin Definition: Origin of edema criterion",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "ards_doc_explicit",
+          "requirement": "Provider must document 'ARDS' or 'acute respiratory distress syndrome.' All four Berlin criteria must be met. 'Bilateral infiltrates' or 'hypoxemic respiratory failure' alone are insufficient.",
+          "insufficient_terms": [
+            "bilateral infiltrates",
+            "acute lung injury",
+            "ALI",
+            "hypoxemic respiratory failure",
+            "pulmonary edema",
+            "white-out lungs"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q1 2017 p.30: ARDS documentation requirements \u2014 Berlin Definition criteria must be met"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "J80",
+          "description": "Acute respiratory distress syndrome",
+          "cc_mcc": "MCC",
+          "specificity_note": "Single code, MCC. No additional specificity available within J80 \u2014 severity (mild/moderate/severe) is clinical but does not change the code."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "Bilateral infiltrates with P/F ratio < 300 on vent but ARDS not documented",
+          "query": "The patient has bilateral opacities on imaging, P/F ratio of [VALUE] on PEEP [VALUE], onset within [TIMEFRAME] of [TRIGGER]. Echocardiogram shows [LV function]. Does this meet criteria for ARDS?",
+          "source": "Berlin Definition (JAMA 2012) + CODING_CLINIC Q1 2017 p.30"
+        },
+        {
+          "trigger": "Documentation says 'acute lung injury' or 'ALI' instead of ARDS",
+          "query": "You documented 'acute lung injury.' The current classification (Berlin Definition) replaces ALI with mild ARDS (P/F 200-300). Does this patient meet ARDS criteria? If so, please document 'ARDS' or 'acute respiratory distress syndrome.'",
+          "source": "Berlin Definition replaced ALI terminology in 2012"
+        }
+      ],
+      "common_pitfalls": [
+        "J80 (ARDS) is MCC and is distinct from J96.x (respiratory failure, also MCC). ARDS is a specific syndrome with Berlin criteria; respiratory failure is broader.",
+        "'ALI' (acute lung injury) is no longer a recognized classification \u2014 it was replaced by 'mild ARDS' in the 2012 Berlin Definition.",
+        "ARDS requires BILATERAL opacities \u2014 unilateral pneumonia with respiratory failure is not ARDS (it's pneumonia + respiratory failure).",
+        "Cardiogenic pulmonary edema must be excluded. If heart failure is the primary cause of bilateral infiltrates, it's NOT ARDS.",
+        "ARDS often coexists with its trigger (pneumonia, sepsis, pancreatitis). Code both the ARDS (J80) and the underlying cause."
+      ],
+      "context_modifiers": {
+        "with_pneumonia": "Pneumonia-triggered ARDS: code both J13-J18 (pneumonia, MCC) and J80 (ARDS, MCC). The pneumonia is the trigger; ARDS is the syndrome.",
+        "with_sepsis": "Sepsis-triggered ARDS: code A41.x + R65.2x (severe sepsis) + J80. ARDS may be the documented organ dysfunction for severe sepsis.",
+        "with_resp_failure": "ARDS inherently involves respiratory failure. Code J80 (ARDS) AND J96.x (respiratory failure) \u2014 they are distinct diagnoses. Both are MCC."
+      }
     },
     {
       "id": "intestinal_ischemia",
@@ -2565,12 +4180,141 @@
         "K55"
       ],
       "notes": "K55.x: Acute/chronic vascular disorders of intestine",
-      "clinical_criteria": [],
-      "documentation_requirements": [],
-      "specificity_ladder": [],
-      "cdi_query_templates": [],
-      "common_pitfalls": [],
-      "context_modifiers": {}
+      "clinical_criteria": [
+        {
+          "id": "isch_ct",
+          "category": "imaging",
+          "data_type": "CT Angiography",
+          "criterion": "CT angiography showing mesenteric arterial occlusion/stenosis, venous thrombosis, or bowel wall changes (pneumatosis, portal venous gas)",
+          "detail": "CTA is the primary diagnostic modality. Identifies arterial vs venous etiology. Pneumatosis intestinalis and portal venous gas suggest bowel necrosis.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q3 2018 p.22: Intestinal ischemia documentation and coding",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "isch_lactate",
+          "category": "laboratory",
+          "data_type": "Lactate",
+          "criterion": "Elevated serum lactate indicating tissue ischemia/necrosis",
+          "detail": "Late finding in mesenteric ischemia. Normal lactate does NOT exclude ischemia. Markedly elevated lactate suggests bowel infarction.",
+          "threshold": {
+            "metric": "Lactate",
+            "operator": ">",
+            "value": 2,
+            "unit": "mmol/L"
+          },
+          "source": "CODING_CLINIC",
+          "source_detail": "General: Lactate in mesenteric ischemia",
+          "required": false,
+          "evidence_weight": "moderate"
+        },
+        {
+          "id": "isch_clinical",
+          "category": "clinical_finding",
+          "data_type": "Clinical Presentation",
+          "criterion": "Abdominal pain out of proportion to exam, bloody stool, peritoneal signs, metabolic acidosis",
+          "detail": "Classic 'pain out of proportion' in acute mesenteric ischemia. Bloody diarrhea suggests mucosal ischemia. Peritonitis suggests infarction/perforation.",
+          "source": "CODING_CLINIC",
+          "source_detail": "General: Clinical presentation of mesenteric ischemia",
+          "required": false,
+          "evidence_weight": "strong"
+        },
+        {
+          "id": "isch_nec",
+          "category": "clinical_finding",
+          "data_type": "NEC Assessment",
+          "criterion": "Necrotizing enterocolitis (NEC) staging: Stage 1 (suspected), Stage 2 (definite), Stage 3 (advanced)",
+          "detail": "K55.30\u2013K55.33 for NEC by stage. Primarily neonatal but can occur in adults. Bell staging used for neonates.",
+          "source": "CODING_CLINIC",
+          "source_detail": "Q2 2019 p.14: NEC staging and coding",
+          "required": false,
+          "evidence_weight": "strong"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "id": "isch_doc_type",
+          "requirement": "Document the TYPE: acute ischemia (reversible, K55.01x), acute infarction (irreversible, K55.02x/K55.04x/K55.06x), or chronic ischemia (K55.1). The ischemia vs infarction distinction matters for management and coding.",
+          "insufficient_terms": [
+            "ischemic bowel",
+            "mesenteric ischemia NOS",
+            "bowel ischemia"
+          ],
+          "source": "CODING_CLINIC",
+          "source_detail": "Q3 2018 p.22: Ischemia vs infarction distinction in coding"
+        },
+        {
+          "id": "isch_doc_location",
+          "requirement": "Document the LOCATION: small intestine (K55.01x/K55.02x), large intestine (K55.03x/K55.04x), or unspecified (K55.05x/K55.06x). Also document extent: focal/segmental vs diffuse.",
+          "insufficient_terms": [
+            "intestinal ischemia NOS"
+          ],
+          "source": "ICD10_GUIDELINES",
+          "source_detail": "FY2023: Expanded intestinal ischemia codes with location and extent"
+        }
+      ],
+      "specificity_ladder": [
+        {
+          "code": "K55022",
+          "description": "Diffuse acute infarction of small intestine",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "CT showing diffuse small bowel infarction, peritonitis, surgical findings",
+          "upgrade_from": "K559",
+          "upgrade_evidence": "Specify infarction (irreversible) + small intestine + diffuse extent"
+        },
+        {
+          "code": "K55011",
+          "description": "Focal acute (reversible) ischemia of small intestine",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "CT showing segmental small bowel ischemia without infarction \u2014 potentially reversible",
+          "upgrade_from": "K559",
+          "upgrade_evidence": "Specify ischemia (reversible) vs infarction (irreversible) from imaging and clinical course"
+        },
+        {
+          "code": "K5533",
+          "description": "Stage 3 necrotizing enterocolitis",
+          "cc_mcc": "MCC",
+          "distinguishing_evidence": "Advanced NEC with perforation, peritonitis, pneumoperitoneum",
+          "specificity_note": "MCC \u2014 most severe NEC stage. Primarily neonatal but adult NEC exists."
+        },
+        {
+          "code": "K551",
+          "description": "Chronic vascular disorders of intestine",
+          "cc_mcc": "CC",
+          "specificity_note": "CC only \u2014 chronic mesenteric ischemia. Distinguished from acute by gradual onset, postprandial pain, weight loss."
+        },
+        {
+          "code": "K559",
+          "description": "Vascular disorder of intestine, unspecified",
+          "cc_mcc": "CC",
+          "specificity_note": "CC only. Major upgrade opportunity: specifying acute ischemia/infarction converts CC \u2192 MCC."
+        }
+      ],
+      "cdi_query_templates": [
+        {
+          "trigger": "CT shows mesenteric ischemia but documentation is nonspecific",
+          "query": "CT on [DATE] shows [FINDINGS \u2014 bowel wall thickening, mesenteric vessel occlusion, pneumatosis]. You documented 'ischemic bowel.' For coding accuracy, is this acute ischemia (potentially reversible) or acute infarction (irreversible)? Which segment \u2014 small intestine, large intestine? Is it focal or diffuse?",
+          "source": "CODING_CLINIC Q3 2018 p.22"
+        },
+        {
+          "trigger": "Patient taken to surgery for bowel ischemia but type/extent not documented",
+          "query": "The patient underwent surgical intervention on [DATE] for bowel ischemia. Operative findings showed [FINDINGS]. Was this acute ischemia or infarction? Was it focal/segmental or diffuse? Small bowel, large bowel, or both?",
+          "source": "ICD10_GUIDELINES \u2014 FY2023 expanded codes"
+        }
+      ],
+      "common_pitfalls": [
+        "Acute intestinal ischemia/infarction codes (K55.0x) are MCC. Chronic ischemia (K55.1) and unspecified (K55.9) are only CC. The acute vs chronic distinction drives the CC\u2192MCC upgrade.",
+        "FY2023 significantly expanded intestinal ischemia codes: location (small/large/unspecified), extent (focal/diffuse), and type (ischemia/infarction). Documentation must match this granularity.",
+        "Ischemic colitis without specification of acute vs chronic defaults to K55.9 (unspecified, CC). Query to determine acuity.",
+        "NEC staging (K55.30\u2013K55.33): all stages are MCC. But accurate staging matters for clinical outcomes tracking.",
+        "Angiodysplasia of colon with hemorrhage (K55.21) is MCC \u2014 distinct from ischemia. Don't confuse vascular malformation bleeding with ischemic bowel."
+      ],
+      "context_modifiers": {
+        "with_sepsis": "Infarcted bowel often leads to sepsis from bacterial translocation. Code both the intestinal infarction and the sepsis. The sepsis may drive a different DRG.",
+        "with_shock": "Mesenteric ischemia from shock (low-flow state): code the underlying shock + the intestinal ischemia. Document the causal relationship.",
+        "post_surgical": "Postoperative mesenteric ischemia: may need procedure complication code. Document whether ischemia is a recognized complication of the specific procedure."
+      }
     },
     {
       "id": "tbi",
@@ -39800,6 +41544,6 @@
     "Z9911": "health_status_z",
     "Z9912": "health_status_z"
   },
-  "tier1_populated": 10,
-  "tier1_code_coverage": 273
+  "tier1_populated": 25,
+  "tier1_code_coverage": 493
 }
