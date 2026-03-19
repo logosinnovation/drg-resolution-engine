@@ -1,0 +1,21 @@
+{
+  "name": "drg-resolution-engine",
+  "version": "5.0.0",
+  "description": "MS-DRG Resolution Engine — CDI Validation Tool. Validated 408/408 against CMS Java Grouper V43.",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vite build && gh-pages -d dist"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0",
+    "gh-pages": "^6.1.1"
+  }
+}
